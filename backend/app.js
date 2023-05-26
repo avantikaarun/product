@@ -1,13 +1,34 @@
-const express= require('express');//to built backend quickly
-const app =  express();//instance of express
-const cors = require('cors');//for cross origin policy
-const port =8745;
-app.use(cors());//use this cors package when server starts up
-app.use(express.json());//use this express.json package when server starts up
-app.use(express.urlencoded({extended: true}));//use this express.urlencoded package when
-app.use(express.static('public'));
-require('./dB')//mongose db connection folder is called here then server starts up
+const express = require('express'); //! to build backend quickly 
+const app = express(); //!instance of express
+const cors = require('cors'); //!for cross orgin policy
+const PORT = 8745
+app.use(cors()); //! "app.use(cors())" means use this cors package when server starts up
 
-app.listen(port,()=>{
-    console.log(`server is running on port ${port}`);
-});
+app.use(express.json()); //! to parse json data
+app.use(express.urlencoded({extended:true})); //! to parse url encoded data
+app.use(express.static('public')); //! to serve static files
+
+
+// DB 
+require('./dB') //!mongoose DB connection folder is called here hen server starts up
+const PRODUCT = require('./product')
+
+
+app.post('/product',async (req,res)=>{
+    try {
+        console.log(req.body);
+        let item = req.body;
+
+        const saveItem = PRODUCT(item);
+        await saveItem.save();
+        res.send("Success!");
+
+    } catch (error) {
+        res.send(error.message)
+    }
+})
+
+
+app.listen(PORT,()=>{
+    console.log(`server is running on port ${PORT}`)
+})
